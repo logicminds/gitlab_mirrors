@@ -46,7 +46,10 @@ describe 'gitlab_mirrors::config' do
     it { should contain_file('/home/gitmirror/repositories').with_ensure('directory')}
     it { should contain_file('/home/gitmirror/private_token').with_ensure('file').with_content('abcdefg123456')}
     it { should contain_file('/home/gitmirror/gitlab-mirrors/config.sh').with_ensure('file')}
+    it { should contain_file('/home/gitmirror/gitlab-mirrors/sync_mirrors.rb').with_ensure('file').
+                  with_source('puppet:///gitlab_mirrors/sync_mirrors.rb')
 
+    }
     describe 'enable cron job' do
       let(:params) do
         {

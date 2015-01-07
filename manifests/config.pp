@@ -49,6 +49,11 @@ class gitlab_mirrors::config(
     require => Git[$repo_dir]
   }
 
+  file{"${repo_dir}/sync_mirrors.rb":
+    ensure => file,
+    source => "puppet:///gitlab_mirrors/sync_mirrors.rb"
+  }
+
   git{$repo_dir:
     ensure => present,
     branch => 'master',

@@ -12,10 +12,18 @@ class gitlab_mirrors::config(
   $generate_public_mirrors   = true,
   $ensure_mirror_sync_job    = absent,
   $ensure_mirror_update_job  = present,
+  $mirrors_yaml_file         = undef,
 ){
   $home_dir = "${base_home_dir}/${system_mirror_user}"
   $repo_dir = "${home_dir}/${mirror_repo_dir_name}"
   $mirrored_repo_dir = "${home_dir}/${repositories_dir_name}"
+
+  if $mirrors_yaml_file == undef {
+    $mirror_list = "${repo_dir}/mirror_list.yaml"
+  }
+  else{
+    $mirror_list = $mirrors_yaml_file
+  }
 
   File{
     owner => $system_mirror_user,
@@ -25,7 +33,7 @@ class gitlab_mirrors::config(
     ensure => present,
   }
 
-  # ssh-keygen for gitmirror user
+# ssh-keygen for gitmirror user
   exec{'generate_key':
     path => ['/bin', '/usr/bin', '/usr/sbin'],
     user => $system_mirror_user,
@@ -54,14 +62,15 @@ class gitlab_mirrors::config(
 
   file{"${repo_dir}/config.sh":
     ensure => file,
-    content => template('gitlab_mirrors/config.sh'),
+    content => template('gitlab_mirrors/config.sh.erb'),
     require => Git[$repo_dir]
   }
 
   file{"${repo_dir}/sync_mirrors.rb":
     ensure => file,
     source => "puppet:///modules/gitlab_mirrors/sync_mirrors.rb",
-    require => Git[$repo_dir]
+    require => Git[$repo_dir],
+    mode => 750
   }
 
   git{$repo_dir:
@@ -73,7 +82,7 @@ class gitlab_mirrors::config(
   }
 
   cron{'gitlab mirrors sync job':
-    command => "ruby ${repo_dir}/sync_mirrors.rb 2>&1 > /dev/null",
+    command => "ruby ${repo_dir}/sync_mirrors.rb $repo_dir $mirror_list 2>&1 > /dev/null",
     ensure => $ensure_mirror_sync_job,
     hour => '*',
     minute => '10',

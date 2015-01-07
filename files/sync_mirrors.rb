@@ -3,28 +3,36 @@
 #Email : corey@bodeco.io
 #Date  : 1/6/2015
 #Purpose : Auto adds/syncs the mirror list from a given yaml file and populates the gitlab-mirrors list
+# requires: the path to the gitlab-mirrors repo, and the path to the mirror list yaml file
+# Example mirror_list.yaml file
+#---
+#puppet-vagrant: https://github.com/boxen/puppet-vagrant.git
+#puppet-sudo: https://github.com/saz/puppet-sudo.git
+#puppetlabs-inifile: https://github.com/puppetlabs/puppetlabs-inifile.git
 
 require 'yaml'
 require 'logger'
 
-if ARGV.size < 1
+if ARGV.size < 2
   puts "Please supply the gitlab-mirrors repo directory"
-  puts "Usage: #{__FILE__} gitlab-mirrors"
+  puts "Usage: #{__FILE__} gitlab-mirrors_repo_dir mirror_list.yaml"
   exit -1
 end
 
-@gitlab_mirrors_dir= ARGV.first
+@gitlab_mirrors_dir= ARGV[0]
+@gitlab_mirror_file =
+def validate_gitlab_mirrors_dir
+  File.exists?(File.join(@gitlab_mirrors_dir, 'config.sh'))
+end
 
 if not validate_gitlab_mirrors_dir
    puts "invalide gitlab-mirrors directory found, no config.sh"
    puts "Please supply the gitlab-mirrors repo directory"
-   puts "Usage: #{__FILE__} gitlab-mirrors"
+   puts "Usage: #{__FILE__} gitlab-mirrors_repo_dir mirror_list.yaml"
    exit -1
 end
 
-def validate_gitlab_mirrors_dir
-  File.exists?(File.join(@gitlab_mirrors_dir, 'config.sh'))
-end
+
 
 def config(file=@gitlab_mirrors_dir)
   if @config.nil?
@@ -38,7 +46,7 @@ end
 @add_mirror_script = "#{@gitlab_mirrors_dir}/add_mirror.sh"
 @project_name = config["gitlab_namespace"]
 @repo_dir = config["repo_dir"]
-@mirror_file = "#{@gitlab_mirrors_dir}/mirror_list.yaml"
+@mirror_file = ARGV[1] || "#{@gitlab_mirrors_dir}/mirror_list.yaml"
 @ls_repo_script = "#{@gitlab_mirrors_dir}/ls-mirrors.sh"
 @git_mirrors = "#{@gitlab_mirrors_dir}/git-mirrors.sh"
 

@@ -20,25 +20,37 @@ if ARGV.size < 2
 end
 
 @gitlab_mirrors_dir= ARGV[0]
-@gitlab_mirror_file =
+
 def validate_gitlab_mirrors_dir
   File.exists?(File.join(@gitlab_mirrors_dir, 'config.sh'))
 end
 
 if not validate_gitlab_mirrors_dir
-   puts "invalide gitlab-mirrors directory found, no config.sh"
+   puts "Invalid gitlab-mirrors directory, no config.sh"
    puts "Please supply the gitlab-mirrors repo directory"
    puts "Usage: #{__FILE__} gitlab-mirrors_repo_dir mirror_list.yaml"
    exit -1
 end
 
+def logger
+  if @logger.nil?
+    @logger = Logger.new('gitlab-mirror-sync.log', 'weekly')
+  end
+  @logger
+end
 
-
-def config(file=@gitlab_mirrors_dir)
+def config(file="#{@gitlab_mirrors_dir}/config.sh")
   if @config.nil?
-    data = File.open('config.sh', 'r') {|f| f.readlines }
+    begin
+      data = File.open(file, 'r') {|f| f.readlines }
+    rescue
+      logger.fatal("Unable to read file: #{file}")
+      exit -1
+    end
     data = data.find_all{|line| line if line =~ /^\w/ } # clean up any comments or whitespace
-    @config = data.map{|conf| conf.chomp.split('=') }.to_h  # convert key/value data to hash
+    data = data.map{|conf| conf.chomp.split('=') }  # convert key/value data to hash inside an array
+    # now convert to hash (compatible with 1.8.7+)
+    @config = Hash[data]
   end
   @config
 end
@@ -49,13 +61,6 @@ end
 @mirror_file = ARGV[1] || "#{@gitlab_mirrors_dir}/mirror_list.yaml"
 @ls_repo_script = "#{@gitlab_mirrors_dir}/ls-mirrors.sh"
 @git_mirrors = "#{@gitlab_mirrors_dir}/git-mirrors.sh"
-
-def logger
-  if @logger.nil?
-    @logger = Logger.new('gitlab-mirror-sync.log', 'weekly')
-  end
-  @logger
-end
 
 # load the mirrors from the list
 def mirrors
@@ -82,8 +87,9 @@ end
 mirrors.each do |name, repo|
   begin
     if not mirror_exists?(name, repo)
-      output = `#{add_mirror_script} --git --project-name #{project_name} --mirror #{repo} 2>&1`
+      output = `#{@add_mirror_script} --git --project-name #{name} --mirror #{repo} 2>&1`
       logger.debug("Adding mirror #{repo}")
+      logger.debug("#{@add_mirror_script} --git --project-name #{name} --mirror #{repo} 2>&1")
       if not $?.success?
         logger.error(output)
       end

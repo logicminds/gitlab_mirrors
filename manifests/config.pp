@@ -56,7 +56,8 @@ class gitlab_mirrors::config(
   file{ "${home_dir}/private_token":
     ensure => file,
     content => $gitlab_mirror_user_token,
-    require => User[$system_mirror_user]
+    require => User[$system_mirror_user],
+    mode => 640
 
   }
 
@@ -91,7 +92,7 @@ class gitlab_mirrors::config(
   }
 
   cron{'gitlab mirrors update job':
-    command => "ruby ${repo_dir}/git-mirror.sh 2>&1 > /dev/null",
+    command => "ruby ${repo_dir}/git-mirrors.sh 2>&1 > /dev/null",
     ensure => $ensure_mirror_update_job,
     hour => '*',
     minute => '0',

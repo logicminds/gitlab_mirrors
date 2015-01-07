@@ -1,0 +1,63 @@
+#Environment file
+
+#
+# gitlab-mirrors settings
+#
+
+#The user git-mirrors will run as.
+system_user="<%= @system_mirror_user %>"
+#The home directory path of the $system_user
+user_home="/home/${system_user}"
+#The repository directory where gitlab-mirrors will contain copies of mirrored
+#repositories before pushing them to gitlab.
+repo_dir="<%= @mirrored_repo_dir %>"
+#colorize output of add_mirror.sh, update_mirror.sh, and git-mirrors.sh
+#commands.
+enable_colors=true
+#These are additional options which should be passed to git-svn.  On the command
+#line type "git help svn"
+git_svn_additional_options="-s"
+#Force gitlab-mirrors to not create the gitlab remote so a remote URL must be
+#provided. (superceded by no_remote_set)
+no_create_set=false
+#Force gitlab-mirrors to only allow local remotes only.
+no_remote_set=false
+#Enable force fetching and pushing.  Will overwrite references if upstream
+#forced pushed.  Applies to git projects only.
+force_update=true
+#This option is for pruning mirrors.  If a branch is deleted upstream then that
+#change will propagate into your GitLab mirror.  Aplies to git projects only.
+prune_mirrors=false
+
+#
+# Gitlab settings
+#
+
+#This is the Gitlab group where all project mirrors will be grouped.
+#gitlab_namespace="Github-puppet-projects"
+gitlab_namespace="<%= @gitlab_namespace %>"
+#This is the base web url of your Gitlab server.
+#gitlab_url="http://git.corp.ositax.com"
+gitlab_url="<%= @gitlab_url %>"
+#Special user you created in Gitlab whose only purpose is to update mirror sites
+#and admin the $gitlab_namespace group.
+gitlab_user="<%= @gitlab_mirror_user %>"
+#Generate a token for your $gitlab_user and set it here.
+gitlab_user_token_secret="$(head -n1 "${user_home}/private_token" 2> /dev/null || echo "")"
+#Verify signed SSL certificates?
+ssl_verify=true
+#Push to GitLab over http?  Otherwise will push projects via SSH.
+http_remote=false
+
+#
+# Gitlab new project default settings.  If a project needs to be created by
+# gitlab-mirrors then it will assign the following values as defaults.
+#
+
+#values must be true or false
+issues_enabled=false
+wall_enabled=false
+wiki_enabled=false
+snippets_enabled=false
+merge_requests_enabled=false
+public=<%= @generate_public_mirrors %>

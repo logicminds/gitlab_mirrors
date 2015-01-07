@@ -1,0 +1,11 @@
+fixtures:
+    symlinks:
+      gitlab_mirrors  : "#{source_dir}"
+    repositories:
+      stdlib:
+        repo: https://github.com/puppetlabs/puppetlabs-stdlib.git
+        ref: 4.3.2
+      git:
+        repo: https://github.com/nanliu/puppet-git.git
+        branch: master
+    forge_modules:

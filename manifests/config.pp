@@ -26,6 +26,7 @@ class gitlab_mirrors::config(
     user => $system_mirror_user,
     command => 'cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N ""',
     creates => "${home_dir}/.ssh/id_rsa.pub",
+    require => User[$system_mirror_user]
   }
 
   file{ "${home_dir}/.ssh/config":
@@ -36,11 +37,14 @@ class gitlab_mirrors::config(
 
   file{$mirrored_repo_dir:
     ensure => 'directory',
+    require => User[$system_mirror_user]
 
   }
   file{ "${home_dir}/private_token":
     ensure => file,
-    content => $gitlab_mirror_user_token
+    content => $gitlab_mirror_user_token,
+    require => User[$system_mirror_user]
+
   }
 
   file{"${repo_dir}/config.sh":
@@ -51,27 +55,32 @@ class gitlab_mirrors::config(
 
   file{"${repo_dir}/sync_mirrors.rb":
     ensure => file,
-    source => "puppet:///gitlab_mirrors/sync_mirrors.rb"
+    source => "puppet:///gitlab_mirrors/sync_mirrors.rb",
+    require => Git[$repo_dir]
   }
 
   git{$repo_dir:
     ensure => present,
     branch => 'master',
     latest => true,
-    origin => $mirror_repo
+    origin => $mirror_repo,
+    require => User[$system_mirror_user]
   }
+
   cron{'gitlab mirrors sync job':
     command => "ruby ${repo_dir}/sync_mirrors.rb 2>&1 > /dev/null",
     ensure => $ensure_mirror_sync_job,
     hour => '*',
-    minute => '10'
+    minute => '10',
+    require => File["${repo_dir}/sync_mirrors.rb"]
   }
 
   cron{'gitlab mirrors update job':
     command => "ruby ${repo_dir}/git-mirror.sh 2>&1 > /dev/null",
     ensure => $ensure_mirror_update_job,
     hour => '*',
-    minute => '0'
+    minute => '0',
+    require => Git[$repo_dir]
   }
 
 

@@ -69,11 +69,11 @@ describe 'gitlab_mirrors::config' do
       end
       it { should contain_cron('gitlab mirrors sync job').
                     with_command('ruby /home/gitmirror/gitlab-mirrors/sync_mirrors.rb 2>&1 > /dev/null').
-                    with_ensure('present')
+                    with_ensure('present').with_user('gitmirror')
       }
       it { should contain_cron('gitlab mirrors update job').
                     with_command('ruby /home/gitmirror/gitlab-mirrors/git-mirror.sh 2>&1 > /dev/null').
-                    with_ensure('present')
+                    with_ensure('present').with_user('gitmirror')
       }
     end
 

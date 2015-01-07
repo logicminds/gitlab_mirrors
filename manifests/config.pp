@@ -77,6 +77,7 @@ class gitlab_mirrors::config(
     ensure => $ensure_mirror_sync_job,
     hour => '*',
     minute => '10',
+    user => $system_mirror_user,
     require => File["${repo_dir}/sync_mirrors.rb"]
   }
 
@@ -85,6 +86,7 @@ class gitlab_mirrors::config(
     ensure => $ensure_mirror_update_job,
     hour => '*',
     minute => '0',
+    user => $system_mirror_user,
     require => Git[$repo_dir]
   }
 

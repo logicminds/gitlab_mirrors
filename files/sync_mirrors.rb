@@ -32,9 +32,10 @@ if not validate_gitlab_mirrors_dir
    exit -1
 end
 
-def logger
+def logger(level=Logger::INFO)
   if @logger.nil?
     @logger = Logger.new('gitlab-mirror-sync.log', 'weekly')
+    @logger.level = level
   end
   @logger
 end
@@ -56,8 +57,8 @@ def config(file="#{@gitlab_mirrors_dir}/config.sh")
 end
 
 @add_mirror_script = "#{@gitlab_mirrors_dir}/add_mirror.sh"
-@project_name = config["gitlab_namespace"]
-@repo_dir = config["repo_dir"]
+@project_name = config["gitlab_namespace"].gsub("\"", "")
+@repo_dir = config["repo_dir"].gsub("\"", "")
 @mirror_file = ARGV[1] || "#{@gitlab_mirrors_dir}/mirror_list.yaml"
 @ls_repo_script = "#{@gitlab_mirrors_dir}/ls-mirrors.sh"
 @git_mirrors = "#{@gitlab_mirrors_dir}/git-mirrors.sh"
@@ -70,26 +71,23 @@ def mirrors
     rescue
       logger.fatal("Cannot find mirror list at #{@mirror_file} or it is invalid")
       exit -1
-      #raise "Cannot find mirror list at #{@mirror_file} or it is invalid"
     end
   end
   @mirrors
 end
 
-def existing_mirrors
-  @existing_mirrors ||= `#{@ls_repo_script}`
-end
-
 def mirror_exists?(name, repo)
-   existing_mirrors.include?(name)
+  path = File.expand_path(File.join(@repo_dir, @project_name, name))
+  logger.debug("Checking if #{path} exists ")
+  File.exists?(path)
 end
 
 mirrors.each do |name, repo|
   begin
     if not mirror_exists?(name, repo)
       output = `#{@add_mirror_script} --git --project-name #{name} --mirror #{repo} 2>&1`
-      logger.debug("Adding mirror #{repo}")
-      logger.debug("#{@add_mirror_script} --git --project-name #{name} --mirror #{repo} 2>&1")
+      logger.info("Adding mirror #{repo}")
+      logger.info("#{@add_mirror_script} --git --project-name #{name} --mirror #{repo} 2>&1")
       if not $?.success?
         logger.error(output)
       end

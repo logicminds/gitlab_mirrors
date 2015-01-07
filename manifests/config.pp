@@ -3,6 +3,7 @@ class gitlab_mirrors::config(
   $gitlab_url                = 'http://192.168.1.1',
   $gitlab_mirror_user        = 'gitmirror',
   $system_mirror_user        = 'gitmirror',
+  $system_mirror_group       = 'gitmirror',
   $base_home_dir             = '/home',
   $mirror_repo               = 'https://github.com/samrocketman/gitlab-mirrors.git',
   $mirror_repo_dir_name      = 'gitlab-mirrors',
@@ -16,6 +17,10 @@ class gitlab_mirrors::config(
   $repo_dir = "${home_dir}/${mirror_repo_dir_name}"
   $mirrored_repo_dir = "${home_dir}/${repositories_dir_name}"
 
+  File{
+    owner => $system_mirror_user,
+    group => $system_mirror_group
+  }
   user{$system_mirror_user:
     ensure => present,
   }

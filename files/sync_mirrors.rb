@@ -32,9 +32,9 @@ if not validate_gitlab_mirrors_dir
    exit -1
 end
 
-def logger(level=Logger::INFO)
+def logger(level=Logger::INFO, file_path=STDOUT)
   if @logger.nil?
-    @logger = Logger.new('gitlab-mirror-sync.log', 'weekly')
+    @logger = Logger.new(file_path, 'weekly')
     @logger.level = level
   end
   @logger

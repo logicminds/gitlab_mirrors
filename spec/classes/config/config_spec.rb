@@ -60,11 +60,16 @@ describe 'gitlab_mirrors::config' do
           :repositories_dir_name => "repositories",
           :gitlab_namespace => "gitlab-mirrors",
           :generate_public_mirrors => true,
-          :enable_mirror_sync_job => true,
+          :ensure_mirror_sync_job => 'present',
+          :ensure_mirror_update_job => 'present'
         }
       end
       it { should contain_cron('gitlab mirrors sync job').
                     with_command('ruby /home/gitmirror/gitlab-mirrors/sync_mirrors.rb 2>&1 > /dev/null').
+                    with_ensure('present')
+      }
+      it { should contain_cron('gitlab mirrors update job').
+                    with_command('ruby /home/gitmirror/gitlab-mirrors/git-mirror.sh 2>&1 > /dev/null').
                     with_ensure('present')
       }
     end
@@ -82,8 +87,10 @@ describe 'gitlab_mirrors::config' do
           :repositories_dir_name => "repositories",
           :gitlab_namespace => "gitlab-mirrors",
           :generate_public_mirrors => true,
+          :ensure_mirror_update_job => 'absent'
         }
       end
-      it { should_not contain_cron('gitlab mirrors sync job') }
+      it { should contain_cron('gitlab mirrors sync job').with_ensure('absent') }
+      it { should contain_cron('gitlab mirrors update job').with_ensure('absent') }
     end
 end

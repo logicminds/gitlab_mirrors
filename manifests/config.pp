@@ -9,7 +9,8 @@ class gitlab_mirrors::config(
   $repositories_dir_name     = 'repositories',
   $gitlab_namespace          = 'gitlab-mirrors',
   $generate_public_mirrors   = true,
-  $enable_mirror_sync_job    = false
+  $ensure_mirror_sync_job    = absent,
+  $ensure_mirror_update_job  = present,
 ){
   $home_dir = "${base_home_dir}/${system_mirror_user}"
   $repo_dir = "${home_dir}/${mirror_repo_dir_name}"
@@ -54,15 +55,19 @@ class gitlab_mirrors::config(
     latest => true,
     origin => $mirror_repo
   }
-  if $enable_mirror_sync_job == true {
-    cron{'gitlab mirrors sync job':
-      command => "ruby ${repo_dir}/sync_mirrors.rb 2>&1 > /dev/null",
-      ensure => present,
-      hour => '*',
-      minute => '10'
-    }
+  cron{'gitlab mirrors sync job':
+    command => "ruby ${repo_dir}/sync_mirrors.rb 2>&1 > /dev/null",
+    ensure => $ensure_mirror_sync_job,
+    hour => '*',
+    minute => '10'
   }
 
+  cron{'gitlab mirrors update job':
+    command => "ruby ${repo_dir}/git-mirror.sh 2>&1 > /dev/null",
+    ensure => $ensure_mirror_update_job,
+    hour => '*',
+    minute => '0'
+  }
 
 
 }

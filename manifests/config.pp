@@ -10,22 +10,15 @@ class gitlab_mirrors::config(
   $repositories_dir_name     = 'repositories',
   $gitlab_namespace          = 'gitlab-mirrors',
   $generate_public_mirrors   = true,
-  $ensure_mirror_sync_job    = absent,
   $ensure_mirror_update_job  = present,
-  $mirrors_yaml_file         = undef,
   $prune_mirrors             = true,
   $force_update              = true,
 ){
+  include gitlab_mirrors::install
+
   $home_dir = "${base_home_dir}/${system_mirror_user}"
   $repo_dir = "${home_dir}/${mirror_repo_dir_name}"
   $mirrored_repo_dir = "${home_dir}/${repositories_dir_name}"
-
-  if $mirrors_yaml_file == undef {
-    $mirror_list = "${repo_dir}/mirror_list.yaml"
-  }
-  else{
-    $mirror_list = $mirrors_yaml_file
-  }
 
   File{
     owner => $system_mirror_user,
@@ -53,8 +46,8 @@ class gitlab_mirrors::config(
   file{$mirrored_repo_dir:
     ensure => 'directory',
     require => User[$system_mirror_user]
-
   }
+
   file{ "${home_dir}/private_token":
     ensure => file,
     content => $gitlab_mirror_user_token,
@@ -69,28 +62,12 @@ class gitlab_mirrors::config(
     require => Git[$repo_dir]
   }
 
-  file{"${repo_dir}/sync_mirrors.rb":
-    ensure => file,
-    source => "puppet:///modules/gitlab_mirrors/sync_mirrors.rb",
-    require => Git[$repo_dir],
-    mode => 750
-  }
-
   git{$repo_dir:
     ensure => present,
     branch => 'master',
     latest => true,
     origin => $mirror_repo,
     require => User[$system_mirror_user]
-  }
-
-  cron{'gitlab mirrors sync job':
-    command => "${repo_dir}/sync_mirrors.rb $repo_dir $mirror_list 2>&1 > /dev/null",
-    ensure => $ensure_mirror_sync_job,
-    hour => '*',
-    minute => '10',
-    user => $system_mirror_user,
-    require => File["${repo_dir}/sync_mirrors.rb"]
   }
 
   cron{'gitlab mirrors update job':
@@ -101,6 +78,4 @@ class gitlab_mirrors::config(
     user => $system_mirror_user,
     require => Git[$repo_dir]
   }
-
-
 }

@@ -46,10 +46,7 @@ describe 'gitlab_mirrors::config' do
   it { should contain_file('/home/gitmirror/repositories').with_ensure('directory')}
   it { should contain_file('/home/gitmirror/private_token').with_ensure('file').with_content('abcdefg123456')}
   it { should contain_file('/home/gitmirror/gitlab-mirrors/config.sh').with_ensure('file')}
-  it { should contain_file('/home/gitmirror/gitlab-mirrors/sync_mirrors.rb').with_ensure('file').
-                with_source('puppet:///modules/gitlab_mirrors/sync_mirrors.rb')
 
-  }
   describe 'enable cron job' do
     let(:params) do
       {
@@ -63,15 +60,9 @@ describe 'gitlab_mirrors::config' do
         :repositories_dir_name => "repositories",
         :gitlab_namespace => "gitlab-mirrors",
         :generate_public_mirrors => true,
-        :ensure_mirror_sync_job => 'present',
         :ensure_mirror_update_job => 'present'
       }
     end
-    it { should contain_cron('gitlab mirrors sync job').
-                  with_command('/home/gitmirror/gitlab-mirrors/sync_mirrors.rb /home/gitmirror/gitlab-mirrors '+
-                                 '/home/gitmirror/gitlab-mirrors/mirror_list.yaml 2>&1 > /dev/null').
-                  with_ensure('present').with_user('gitmirror')
-    }
     it { should contain_cron('gitlab mirrors update job').
                   with_command('/home/gitmirror/gitlab-mirrors/git-mirrors.sh 2>&1 > /dev/null').
                   with_ensure('present').with_user('gitmirror')
@@ -94,7 +85,6 @@ describe 'gitlab_mirrors::config' do
         :ensure_mirror_update_job => 'absent'
       }
     end
-    it { should contain_cron('gitlab mirrors sync job').with_ensure('absent') }
     it { should contain_cron('gitlab mirrors update job').with_ensure('absent') }
   end
 end

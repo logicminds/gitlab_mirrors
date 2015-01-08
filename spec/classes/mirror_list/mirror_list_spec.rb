@@ -29,28 +29,16 @@ describe 'gitlab_mirrors::mirror_list' do
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
-  describe 'mirror list repo is undef' do
-    let(:params) do
-      {
-        #:mirror_list_repo => undef,
-        :mirror_list_repo_path => '/home/gitmirror/mirror_list',
-        #:mirror_list_file_source => "puppet:///modules/gitlab_mirrors/mirror_list.yaml",
-      }
-    end
-    it { should contain_file('/home/gitmirror/mirror_list').with_ensure('directory')}
-    it { should contain_cron('sync mirror list repo').with_ensure('absent') }
-    it { should contain_file('/home/gitmirror/mirror_list/mirror_list.yaml').with_ensure('file').
-                  with_source('puppet:///modules/gitlab_mirrors/mirror_list.yaml').
-                  with_require('File[/home/gitmirror/mirror_list]').
-                  with_before('Cron[sync mirror list repo]')
-    }
-  end
   describe 'mirror list repo is defined' do
     let(:params) do
       {
         :mirror_list_repo => 'https://github.com/logicminds/gitlab_mirrors.git',
         :mirror_list_repo_path => '/home/gitmirror/mirror_list',
         #:mirror_list_file_source => "puppet:///modules/gitlab_mirrors/mirror_list.yaml",
+        :ensure_mirror_sync_job    => 'absent',
+        :system_mirror_user        => 'gitmirror',
+        :gitlab_mirrors_repo_dir_path => '/home/gitmirror/gitlab-mirrors',
+        :system_user_home_dir => '/home/gitmirror'
       }
     end
     it { should contain_cron('sync mirror list repo').with_ensure('present').
@@ -61,5 +49,14 @@ describe 'gitlab_mirrors::mirror_list' do
     }
     it { should_not contain_file('/home/gitmirror/mirror_list')}
     it { should_not contain_file('/home/gitmirror/mirror_list/mirror_list.yaml')}
+    it { should contain_cron('gitlab mirrors sync job').
+                  with_command('/home/gitmirror/sync_mirrors.rb /home/gitmirror/gitlab-mirrors '+
+                                 '/home/gitmirror/mirror_list/mirror_list.yaml 2>&1 > /dev/null').
+                  with_ensure('absent').with_user('gitmirror')
+    }
+    it { should contain_file('/home/gitmirror/sync_mirrors.rb').with_ensure('file').
+                  with_source('puppet:///modules/gitlab_mirrors/sync_mirrors.rb')
+
+    }
   end
 end

@@ -4,7 +4,7 @@ class gitlab_mirrors::mirror_list(
   $mirror_list_file_source = "puppet:///modules/gitlab_mirrors/mirror_list.yaml"
 ) {
 # if we are lazy and just want to maintain a file in a puppet module we can just use the source location
-  if $mirror_list_repo == undef {
+  if $mirror_list_repo == undef and $mirror_list_file_source {
     $ensure_cron_job = absent
 
     file{$mirror_list_repo_path:
@@ -32,7 +32,7 @@ class gitlab_mirrors::mirror_list(
   }
   cron{'sync mirror list repo':
     ensure => $ensure_cron_job,
-    command => 'cd $mirror_list_repo_path && git pull 2>&1 > /dev/null',
+    command => "cd ${mirror_list_repo_path} && git pull 2>&1 > /dev/null",
     minute => '05',
   }
 

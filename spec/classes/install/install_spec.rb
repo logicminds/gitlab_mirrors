@@ -14,14 +14,14 @@ describe 'gitlab_mirrors::install' do
     # facts on a per describe/context block.  If you use a fact in your
     # manifest you should mock the facts below.
     let(:facts) do
-       {}
+        {}
     end
     # below is a list of the resource parameters that you can override
     # by default all non-required parameters are commented out
     # while all required parameters will require you to add a value
     let(:params) do
-      {
-      }
+        {
+        }
     end
     # add these two lines in a single test block to enable puppet and hiera debug mode
     # Puppet::Util::Log.level = :debug

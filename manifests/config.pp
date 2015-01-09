@@ -1,10 +1,10 @@
 class gitlab_mirrors::config(
   $gitlab_mirror_user_token,
-  $gitlab_url                = 'http://192.168.1.1',
+  $gitlab_url,               # 'http://192.168.1.1',
   $gitlab_mirror_user        = 'gitmirror',
   $system_mirror_user        = 'gitmirror',
   $system_mirror_group       = 'gitmirror',
-  $base_home_dir             = '/home',
+  $system_user_home_dir      = '/home/gitmirror',
   $mirror_repo               = 'https://github.com/samrocketman/gitlab-mirrors.git',
   $mirror_repo_dir_name      = 'gitlab-mirrors',
   $repositories_dir_name     = 'repositories',
@@ -16,9 +16,8 @@ class gitlab_mirrors::config(
 ){
   include gitlab_mirrors::install
 
-  $home_dir = "${base_home_dir}/${system_mirror_user}"
-  $repo_dir = "${home_dir}/${mirror_repo_dir_name}"
-  $mirrored_repo_dir = "${home_dir}/${repositories_dir_name}"
+  $repo_dir = "${system_user_home_dir}/${mirror_repo_dir_name}"
+  $mirrored_repo_dir = "${system_user_home_dir}/${repositories_dir_name}"
 
   File{
     owner => $system_mirror_user,
@@ -33,11 +32,11 @@ class gitlab_mirrors::config(
     path => ['/bin', '/usr/bin', '/usr/sbin'],
     user => $system_mirror_user,
     command => 'cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N ""',
-    creates => "${home_dir}/.ssh/id_rsa.pub",
+    creates => "${system_user_home_dir}/.ssh/id_rsa.pub",
     require => User[$system_mirror_user]
   }
 
-  file{ "${home_dir}/.ssh/config":
+  file{ "${system_user_home_dir}/.ssh/config":
     ensure  => file,
     content => "Host ${gitlab_url}\n\tUser git",
     require => Exec['generate_key']
@@ -48,7 +47,7 @@ class gitlab_mirrors::config(
     require => User[$system_mirror_user]
   }
 
-  file{ "${home_dir}/private_token":
+  file{ "${system_user_home_dir}/private_token":
     ensure => file,
     content => $gitlab_mirror_user_token,
     require => User[$system_mirror_user],

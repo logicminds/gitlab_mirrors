@@ -35,7 +35,7 @@ describe 'gitlab_mirrors::mirror_list' do
         :mirror_list_repo => 'https://github.com/logicminds/gitlab_mirrors.git',
         :mirror_list_repo_path => '/home/gitmirror/mirror_list',
         #:mirror_list_file_source => "puppet:///modules/gitlab_mirrors/mirror_list.yaml",
-        :ensure_mirror_sync_job    => 'absent',
+        :ensure_mirror_sync_job    => 'present',
         :system_mirror_user        => 'gitmirror',
         :gitlab_mirrors_repo_dir_path => '/home/gitmirror/gitlab-mirrors',
         :system_user_home_dir => '/home/gitmirror'
@@ -52,7 +52,7 @@ describe 'gitlab_mirrors::mirror_list' do
     it { should contain_cron('gitlab mirrors sync job').
                   with_command('/home/gitmirror/sync_mirrors.rb /home/gitmirror/gitlab-mirrors '+
                                  '/home/gitmirror/mirror_list/mirror_list.yaml 2>&1 > /dev/null').
-                  with_ensure('absent').with_user('gitmirror')
+                  with_ensure('present').with_user('gitmirror')
     }
     it { should contain_file('/home/gitmirror/sync_mirrors.rb').with_ensure('file').
                   with_source('puppet:///modules/gitlab_mirrors/sync_mirrors.rb')

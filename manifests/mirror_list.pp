@@ -1,7 +1,7 @@
 class gitlab_mirrors::mirror_list(
-  $mirror_list_repo          = undef,
+  $mirror_list_repo,
   $mirror_list_repo_path,
-  $ensure_mirror_sync_job    = absent,
+  $ensure_mirror_sync_job    = present,
   $system_mirror_user        = 'gitmirror',
   $system_mirror_group       = 'gitmirror',
   $gitlab_mirrors_repo_dir_path,

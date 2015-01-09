@@ -21,10 +21,47 @@ describe 'gitlab_mirrors' do
     # while all required parameters will require you to add a value
     let(:params) do
         {
+          :mirror_list_repo => 'https://github.com/logicminds/mirror_list.git',
+          :mirror_list_repo_path => '/home/gitmirror/mirror_list',
+          :gitlab_mirror_user_token => 'abcdefg123456',
+          :gitlab_url => "http://192.168.1.1",
         }
     end
     # add these two lines in a single test block to enable puppet and hiera debug mode
     # Puppet::Util::Log.level = :debug
     # Puppet::Util::Log.newdestination(:console)
-
+    it { should contain_class('gitlab_mirrors::install').with({})}
+    it { should contain_class('gitlab_mirrors::config').with(
+                  {
+                    :gitlab_mirror_user_token  => 'abcdefg123456',
+                    :gitlab_url                => 'http://192.168.1.1',
+                    :gitlab_mirror_user        => 'gitmirror',
+                    :system_mirror_user        => 'gitmirror',
+                    :system_mirror_group       => 'gitmirror',
+                    :system_user_home_dir      => '/home/gitmirror',
+                    :mirror_repo               => 'https://github.com/samrocketman/gitlab-mirrors.git',
+                    :mirror_repo_dir_name      => 'gitlab-mirrors',
+                    :repositories_dir_name     => 'repositories',
+                    :gitlab_namespace          => 'gitlab-mirrors',
+                    :generate_public_mirrors   => 'true',
+                    :ensure_mirror_update_job  => 'present',
+                    :prune_mirrors             => 'true',
+                    :force_update              => 'true',
+                    :require                   => 'Class[Gitlab_mirrors::Install]'
+                  })
+    }
+    it { should contain_class('gitlab_mirrors::mirror_list').with(
+                  {
+                    :mirror_list_repo          => 'https://github.com/logicminds/mirror_list.git',
+                    :mirror_list_repo_path     =>'/home/gitmirror/mirror_list',
+                    :ensure_mirror_sync_job    => 'present',
+                    :system_mirror_user        => 'gitmirror',
+                    :system_mirror_group       => 'gitmirror',
+                    :gitlab_mirrors_repo_dir_path => "/home/gitmirror/gitlab-mirrors",
+                    :mirrors_list_yaml_file    => 'mirror_list.yaml',
+                    :ensure_mirror_list_repo_cron_job => 'present',
+                    :system_user_home_dir      => '/home/gitmirror',
+                    :require                   => 'Class[Gitlab_mirrors::Config]'
+                  })
+    }
 end

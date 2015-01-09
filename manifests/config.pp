@@ -66,7 +66,14 @@ class gitlab_mirrors::config(
     branch => 'master',
     latest => true,
     origin => $mirror_repo,
-    require => User[$system_mirror_user]
+    require => User[$system_mirror_user],
+    notify => Exec["chown ${repo_dir}"]
+  }
+
+  exec{"chown ${repo_dir}":
+    command => "chown -R ${system_mirror_user}:${system_mirror_group} ${repo_dir}",
+    path => ['/bin', '/usr/bin'],
+    refreshonly => true,
   }
 
   cron{'gitlab mirrors update job':

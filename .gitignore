@@ -1,3 +1,4 @@
 .idea
+spec/fixtures
 .vagrant
 .bundle

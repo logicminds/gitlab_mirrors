@@ -24,7 +24,13 @@ class gitlab_mirrors::mirror_list(
     branch => 'master',
     latest => true,
     origin => $mirror_list_repo,
-    before => Cron['sync mirror list repo']
+    before => Cron['sync mirror list repo'],
+    notify => Exec["chown ${mirror_list_repo_path}"]
+  }
+  exec{"chown ${mirror_list_repo_path}":
+    command => "chown -R ${system_mirror_user}:${system_mirror_group} ${mirror_list_repo_path}",
+    path => ['/bin', '/usr/bin'],
+    refreshonly => true,
   }
   cron{'sync mirror list repo':
     ensure => $ensure_mirror_list_repo_cron_job,

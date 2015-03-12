@@ -36,16 +36,16 @@ describe 'gitlab_mirrors::config' do
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
-  it { should contain_git('/home/gitmirror/gitlab-mirrors').with_ensure('present').
+  it { is_expected.to contain_git('/home/gitmirror/gitlab-mirrors').with_ensure('present').
                 with_origin('https://github.com/samrocketman/gitlab-mirrors.git').
                 with_branch('master')
   }
-  it {should contain_exec('generate_key').with_user('gitmirror').with_creates('/home/gitmirror/.ssh/id_rsa.pub') }
-  it { should contain_file('/home/gitmirror/.ssh/config').with_ensure('file').
+  it {is_expected.to contain_exec('generate_key').with_user('gitmirror').with_creates('/home/gitmirror/.ssh/id_rsa.pub') }
+  it { is_expected.to contain_file('/home/gitmirror/.ssh/config').with_ensure('file').
                 with_content("Host http://192.168.1.1\n\tUser git")}
-  it { should contain_file('/home/gitmirror/repositories').with_ensure('directory')}
-  it { should contain_file('/home/gitmirror/private_token').with_ensure('file').with_content('abcdefg123456')}
-  it { should contain_file('/home/gitmirror/gitlab-mirrors/config.sh').with_ensure('file')}
+  it { is_expected.to contain_file('/home/gitmirror/repositories').with_ensure('directory')}
+  it { is_expected.to contain_file('/home/gitmirror/private_token').with_ensure('file').with_content('abcdefg123456')}
+  it { is_expected.to contain_file('/home/gitmirror/gitlab-mirrors/config.sh').with_ensure('file')}
 
   describe 'enable cron job' do
     let(:params) do
@@ -63,7 +63,7 @@ describe 'gitlab_mirrors::config' do
         :ensure_mirror_update_job => 'present'
       }
     end
-    it { should contain_cron('gitlab mirrors update job').
+    it { is_expected.to contain_cron('gitlab mirrors update job').
                   with_command('/home/gitmirror/gitlab-mirrors/git-mirrors.sh 2>&1 > /dev/null').
                   with_ensure('present').with_user('gitmirror')
     }
@@ -85,6 +85,6 @@ describe 'gitlab_mirrors::config' do
         :ensure_mirror_update_job => 'absent'
       }
     end
-    it { should contain_cron('gitlab mirrors update job').with_ensure('absent') }
+    it { is_expected.to contain_cron('gitlab mirrors update job').with_ensure('absent') }
   end
 end

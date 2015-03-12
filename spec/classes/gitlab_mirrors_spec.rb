@@ -30,8 +30,8 @@ describe 'gitlab_mirrors' do
     # add these two lines in a single test block to enable puppet and hiera debug mode
     # Puppet::Util::Log.level = :debug
     # Puppet::Util::Log.newdestination(:console)
-    it { should contain_class('gitlab_mirrors::install').with({})}
-    it { should contain_class('gitlab_mirrors::config').with(
+    it { is_expected.to contain_class('gitlab_mirrors::install').with({})}
+    it { is_expected.to contain_class('gitlab_mirrors::config').with(
                   {
                     :gitlab_mirror_user_token  => 'abcdefg123456',
                     :gitlab_url                => 'http://192.168.1.1',
@@ -50,7 +50,7 @@ describe 'gitlab_mirrors' do
                     :require                   => 'Class[Gitlab_mirrors::Install]'
                   })
     }
-    it { should contain_class('gitlab_mirrors::mirror_list').with(
+    it { is_expected.to contain_class('gitlab_mirrors::mirror_list').with(
                   {
                     :mirror_list_repo          => 'https://github.com/logicminds/mirror_list.git',
                     :mirror_list_repo_path     =>'/home/gitmirror/mirror_list',

@@ -26,5 +26,5 @@ describe 'gitlab_mirrors::install' do
     # add these two lines in a single test block to enable puppet and hiera debug mode
     # Puppet::Util::Log.level = :debug
     # Puppet::Util::Log.newdestination(:console)
-    it { should contain_package('gitlab3').with_provider('pip').with_ensure('0.5.4') }
+    it { is_expected.to contain_package('gitlab3').with_provider('pip').with_ensure('0.5.4') }
 end

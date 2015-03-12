@@ -41,20 +41,20 @@ describe 'gitlab_mirrors::mirror_list' do
         :system_user_home_dir => '/home/gitmirror'
       }
     end
-    it { should contain_cron('sync mirror list repo').with_ensure('present').
+    it { is_expected.to contain_cron('sync mirror list repo').with_ensure('present').
                   with_command('cd /home/gitmirror/mirror_list && git pull 2>&1 > /dev/null')}
-    it { should contain_git('/home/gitmirror/mirror_list').with_ensure('present').
+    it { is_expected.to contain_git('/home/gitmirror/mirror_list').with_ensure('present').
                   with_origin('https://github.com/logicminds/gitlab_mirrors.git').
                   with_branch('master')
     }
-    it { should_not contain_file('/home/gitmirror/mirror_list')}
-    it { should_not contain_file('/home/gitmirror/mirror_list/mirror_list.yaml')}
-    it { should contain_cron('gitlab mirrors sync job').
+    it { is_expected.not_to contain_file('/home/gitmirror/mirror_list')}
+    it { is_expected.not_to contain_file('/home/gitmirror/mirror_list/mirror_list.yaml')}
+    it { is_expected.to contain_cron('gitlab mirrors sync job').
                   with_command('/home/gitmirror/sync_mirrors.rb /home/gitmirror/gitlab-mirrors '+
                                  '/home/gitmirror/mirror_list/mirror_list.yaml 2>&1 > /dev/null').
                   with_ensure('present').with_user('gitmirror')
     }
-    it { should contain_file('/home/gitmirror/sync_mirrors.rb').with_ensure('file').
+    it { is_expected.to contain_file('/home/gitmirror/sync_mirrors.rb').with_ensure('file').
                   with_source('puppet:///modules/gitlab_mirrors/sync_mirrors.rb')
 
     }

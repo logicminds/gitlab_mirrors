@@ -1,7 +1,7 @@
 {
-  "name": "bodeco-gitlab_mirrors",
+  "name": "logicminds-gitlab_mirrors",
   "version": "0.1.0",
-  "author": "bodeco",
+  "author": "Corey Osman",
   "summary": "Installs and Configures the gitlab-mirrors project",
   "license": "Apache 2.0",
   "source": "https://github.com/logicminds/gitlab_mirrors.git",

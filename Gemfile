@@ -15,10 +15,8 @@ group :development do
   gem "travis-lint"
   gem "puppet-blacksmith"
   gem "guard-rake"
-  gem "metadata-json-lint"
+ # gem "metadata-json-lint"
   gem 'puppet-syntax'
-  gem 'serverspec'
-  gem 'bodeco_module_helper', :git => 'https://github.com/bodeco/bodeco_module_helper.git'
-
+#  gem 'serverspec'
 end
 

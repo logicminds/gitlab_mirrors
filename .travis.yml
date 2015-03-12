@@ -1,0 +1,21 @@
+branches:
+  only:
+    - master
+    - development
+language: ruby
+bundler_args: --without development
+script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
+rvm:
+- 1.9.3
+- 2.0.0
+env:
+  matrix:
+    - PUPPET_GEM_VERSION="~> 3.2"
+    - PUPPET_GEM_VERSION="~> 3.7"
+
+matrix:
+  exclude:
+
+notifications:
+  email: corey@logicminds.biz
+

@@ -53,4 +53,5 @@ class gitlab_mirrors::mirror_list(
     user => $system_mirror_user,
     require => File["${repo_dir}/sync_mirrors.rb"]
   }
+
 }

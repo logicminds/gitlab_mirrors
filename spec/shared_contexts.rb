@@ -1,4 +1,3 @@
-require 'hiera-puppet-helper'
 
 # optional, this should be the path to where the hirea data config file is in this repo
 hiera_config_file = File.expand_path(File.join(File.dirname(__FILE__), '..','data', 'hiera.yaml'))

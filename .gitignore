@@ -1,4 +1,5 @@
 .idea
+bundle
 pkg
 spec/fixtures
 .vagrant

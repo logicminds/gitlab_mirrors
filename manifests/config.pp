@@ -13,6 +13,7 @@ class gitlab_mirrors::config(
   $ensure_mirror_update_job  = present,
   $prune_mirrors             = true,
   $force_update              = true,
+  $gitlab_mirrors_branch     = 'master',
 ){
   include gitlab_mirrors::install
 
@@ -23,9 +24,20 @@ class gitlab_mirrors::config(
     owner => $system_mirror_user,
     group => $system_mirror_group
   }
-  user{$system_mirror_user:
-    ensure => present,
+  # in case you happen to be running this as a non-root user, the following code will work
+  if $::id == 'root' {
+    user{ $system_mirror_user:
+      ensure => present,
+    }
+    file{$system_user_home_dir:
+      ensure => 'directory',
+      require => User[$system_mirror_user]
+    }
+  } else {
+
+    file{$system_user_home_dir: }
   }
+
 
 # ssh-keygen for gitmirror user
   exec{'generate_key':
@@ -33,7 +45,7 @@ class gitlab_mirrors::config(
     user => $system_mirror_user,
     command => 'cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N ""',
     creates => "${system_user_home_dir}/.ssh/id_rsa.pub",
-    require => User[$system_mirror_user]
+    require => File[$system_user_home_dir]
   }
 
   file{ "${system_user_home_dir}/.ssh/config":
@@ -44,13 +56,13 @@ class gitlab_mirrors::config(
 
   file{$mirrored_repo_dir:
     ensure => 'directory',
-    require => User[$system_mirror_user]
+    require => File[$system_user_home_dir]
   }
 
   file{ "${system_user_home_dir}/private_token":
     ensure => file,
     content => $gitlab_mirror_user_token,
-    require => User[$system_mirror_user],
+    require => File[$system_user_home_dir],
     mode => 640
 
   }
@@ -58,16 +70,18 @@ class gitlab_mirrors::config(
   file{"${repo_dir}/config.sh":
     ensure => file,
     content => template('gitlab_mirrors/config.sh.erb'),
-    require => Git[$repo_dir]
+    require => Exec['git_mirrors']
   }
+  exec{'git_mirrors':
+    path => ['/bin', '/usr/bin'],
+    cwd => $system_user_home_dir,
+    command => "git clone -b $gitlab_mirrors_branch $mirror_repo $repo_dir",
+    require => File[$system_user_home_dir],
+    notify => Exec["chown ${repo_dir}"],
+    user   => $system_mirror_user,
+    logoutput => true,
+    creates => "${repo_dir}/.git"
 
-  git{$repo_dir:
-    ensure => present,
-    branch => 'master',
-    latest => true,
-    origin => $mirror_repo,
-    require => User[$system_mirror_user],
-    notify => Exec["chown ${repo_dir}"]
   }
 
   exec{"chown ${repo_dir}":
@@ -82,6 +96,6 @@ class gitlab_mirrors::config(
     hour => '*',
     minute => '0',
     user => $system_mirror_user,
-    require => Git[$repo_dir]
+    require => Exec['git_mirrors']
   }
 }

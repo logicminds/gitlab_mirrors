@@ -36,10 +36,14 @@ describe 'gitlab_mirrors::config' do
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
-  it { is_expected.to contain_git('/home/gitmirror/gitlab-mirrors').with_ensure('present').
-                with_origin('https://github.com/samrocketman/gitlab-mirrors.git').
-                with_branch('master')
-  }
+  it do
+    is_expected.to contain_exec('git_mirrors').
+                       with({"command"=>'git clone -b master https://github.com/samrocketman/gitlab-mirrors.git /home/gitmirror/gitlab-mirrors',
+                             "user"=> 'gitmirror',
+                             "notify"=>"Exec[chown /home/gitmirror/gitlab-mirrors]",
+                             "creates" => '/home/gitmirror/gitlab-mirrors/.git',
+                            })
+  end
   it {is_expected.to contain_exec('generate_key').with_user('gitmirror').with_creates('/home/gitmirror/.ssh/id_rsa.pub') }
   it { is_expected.to contain_file('/home/gitmirror/.ssh/config').with_ensure('file').
                 with_content("Host http://192.168.1.1\n\tUser git")}

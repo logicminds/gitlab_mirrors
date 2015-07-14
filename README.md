@@ -8,10 +8,11 @@
     * [What gitlab_mirrors affects](#what-gitlab_mirrors-affects)
     * [Setup requirements](#setup-requirements)
     * [Beginning with gitlab_mirrors](#beginning-with-gitlab_mirrors)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+4. [Requirements - Required command line tools](#requirements)    
+5. [Usage - Configuration options and additional functionality](#usage)
+6. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+7. [Limitations - OS compatibility, etc.](#limitations)
+8. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
@@ -130,16 +131,40 @@ To setup the gitlab_mirrors automated sync_mirror tasks.
      system_user_home_dir             => '/home/gitmirror'
 ```
 
-Install everything with just one resource declaration
+Install everything with just one resource declaration (minimum parameters)
 ```
 class{'gitlab_mirrors':
-  (
     gitlab_mirror_user_token => 'abc1233dkdsisdaf',
     gitlab_url               => 'http://gitlab.company.corp,
     mirror_list_repo         => 'https://github.com/logicminds/mirror_list.git',
     mirror_list_repo_path    => '/home/gitmirror/mirror_list',
-  )
 }
+```
+
+Install everything Maximum parameters
+```
+class{'gitlab_mirrors':
+  mirror_list_repo         => 'https://github.com/logicminds/mirror_list.git',
+  mirror_list_repo_path    => '/home/gitmirror/mirror_list',
+  gitlab_mirror_user_token  => '1234556',
+  gitlab_url                => 'https://gitlab.com',
+  gitlab_mirror_user        => 'user123',
+  system_mirror_user        => 'gitmirror',
+  system_mirror_group       => 'gitmirror',
+  mirror_repo               => 'https://github.com/samrocketman/gitlab-mirrors.git',
+  repositories_dir_name     => 'repositories',
+  gitlab_namespace          => 'singlestone',
+  generate_public_mirrors   => true,
+  ensure_mirror_update_job  => present,
+  prune_mirrors             => true,
+  force_update              => true,
+  ensure_mirror_sync_job    => present,
+  mirrors_list_yaml_file    => 'mirror_list.yaml',
+  ensure_mirror_list_repo_cron_job => present,
+  configure_mirror_list_feature => true,
+  install_dependencies      => 'true'
+}
+
 ```
 ### Mirror List Functionality
 Example Mirror list file
@@ -175,7 +200,22 @@ baked into the mirror_list class so you don't need to configure anything but the
 - mirrors_list_yaml_file
 - ensure_mirror_list_repo_cron_job
 - configure_mirror_list_feature     # if true, sets ups the mirror list functionality
+- install_dependencies   # install git and pip
 
+## Requirements
+The following command line tools must be present on the system
+1. pip
+2. git
+
+Python pip is not installed but a requirement of this module.  It is up to you to install it.  But generally 
+you can install pip via rpm or many other ways:
+
+```
+rpm -ivh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+yum -y install python-pip
+```
+
+Alternatively in case your lazy, you can use the install_depedencies.pp class to perform the installation for you.
 
 ## Limitations
 

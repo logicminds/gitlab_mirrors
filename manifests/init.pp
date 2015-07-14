@@ -56,9 +56,14 @@ class gitlab_mirrors(
   $mirrors_list_yaml_file    = 'mirror_list.yaml',
   $ensure_mirror_list_repo_cron_job = present,
   $configure_mirror_list_feature = true,
+  $install_dependencies      = 'false',
 ) {
-
-  include gitlab_mirrors::install
+  class{'gitlab_mirrors::install_dependencies':
+    install_dependencies => $install_dependencies
+  }
+  class{'gitlab_mirrors::install':
+    require => Class['gitlab_mirrors::install_dependencies']
+  }
   class{'gitlab_mirrors::config':
     gitlab_mirror_user_token  => $gitlab_mirror_user_token,
     gitlab_url                => $gitlab_url,
@@ -74,7 +79,7 @@ class gitlab_mirrors(
     ensure_mirror_update_job  => $ensure_mirror_update_job,
     prune_mirrors             => $prune_mirrors,
     force_update              => $force_update,
-    require                   => Class['gitlab_mirrors::install']
+    require                   => Class['gitlab_mirrors::install_dependencies','gitlab_mirrors::install']
   }
   if $configure_mirror_list_feature == true {
     class{'gitlab_mirrors::mirror_list':
@@ -90,5 +95,7 @@ class gitlab_mirrors(
       require                   => Class['gitlab_mirrors::config']
     }
   }
-
+  Class['gitlab_mirrors::install_dependencies'] ~>
+  Class['gitlab_mirrors::install'] ~>
+  Class['gitlab_mirrors::config']
 }

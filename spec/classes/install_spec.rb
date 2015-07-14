@@ -14,7 +14,7 @@ describe 'gitlab_mirrors::install' do
     # facts on a per describe/context block.  If you use a fact in your
     # manifest you should mock the facts below.
     let(:facts) do
-        {}
+        {:id => 'root'}
     end
     # below is a list of the resource parameters that you can override
     # by default all non-required parameters are commented out

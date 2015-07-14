@@ -57,6 +57,8 @@ class gitlab_mirrors(
   $ensure_mirror_list_repo_cron_job = present,
   $configure_mirror_list_feature = true,
   $install_dependencies      = 'false',
+  $ssh_rsa_public_key        = undef ,
+  $ssh_rsa_private_key       = undef,
 ) {
   class{'gitlab_mirrors::install_dependencies':
     install_dependencies => $install_dependencies
@@ -79,6 +81,8 @@ class gitlab_mirrors(
     ensure_mirror_update_job  => $ensure_mirror_update_job,
     prune_mirrors             => $prune_mirrors,
     force_update              => $force_update,
+    ssh_rsa_public_key        => $ssh_rsa_public_key,
+    ssh_rsa_private_key       => $ssh_rsa_private_key,
     require                   => Class['gitlab_mirrors::install_dependencies','gitlab_mirrors::install']
   }
   if $configure_mirror_list_feature == true {

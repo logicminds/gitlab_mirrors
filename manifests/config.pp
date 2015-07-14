@@ -14,6 +14,8 @@ class gitlab_mirrors::config(
   $prune_mirrors             = true,
   $force_update              = true,
   $gitlab_mirrors_branch     = 'master',
+  $ssh_rsa_public_key        = undef ,
+  $ssh_rsa_private_key       = undef,
 ){
   include gitlab_mirrors::install
 
@@ -24,7 +26,7 @@ class gitlab_mirrors::config(
     owner => $system_mirror_user,
     group => $system_mirror_group
   }
-  # in case you happen to be running this as a non-root user, the following code will work
+# in case you happen to be running this as a non-root user, the following code will work
   if $::id == 'root' {
     user{ $system_mirror_user:
       ensure => present,
@@ -34,24 +36,48 @@ class gitlab_mirrors::config(
       require => User[$system_mirror_user]
     }
   } else {
-
+  # this is here just to satisfy dependencies and ordering
     file{$system_user_home_dir: }
   }
-
-
-# ssh-keygen for gitmirror user
-  exec{'generate_key':
-    path => ['/bin', '/usr/bin', '/usr/sbin'],
-    user => $system_mirror_user,
-    command => 'cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N ""',
-    creates => "${system_user_home_dir}/.ssh/id_rsa.pub",
+  file{"${system_user_home_dir}/.ssh":
+    ensure => directory,
     require => File[$system_user_home_dir]
   }
 
+# ssh-keygen for gitmirror user
+# you will then need to add this key to the gitlab account
+  if $ssh_rsa_private_key == undef {
+    exec{ 'generate_key':
+      path    => ['/bin', '/usr/bin', '/usr/sbin'],
+      user    => $system_mirror_user,
+      command => 'cat /dev/zero | ssh-keygen -t rsa -b 2048 -q -N ""',
+      creates => "${system_user_home_dir}/.ssh/id_rsa.pub",
+      require => File[$system_user_home_dir]
+    }
+  }
+  # if you want to use pregenerated keys, then we can just
+  # reuse them here
+  else {
+    file{"${system_user_home_dir}/.ssh":
+      ensure => directory,
+    }
+    file{"${system_user_home_dir}/.ssh/id_rsa":
+      ensure => file,
+      content => $ssh_rsa_private_key,
+      mode => 600,
+      require => File["${system_user_home_dir}/.ssh"]
+    }
+    file{"${system_user_home_dir}/.ssh/id_rsa.pub":
+      ensure => file,
+      content => $ssh_rsa_public_key,
+      mode => 644,
+      require => File["${system_user_home_dir}/.ssh"]
+    }
+  }
   file{ "${system_user_home_dir}/.ssh/config":
     ensure  => file,
     content => "Host ${gitlab_url}\n\tUser git",
-    require => Exec['generate_key']
+    require => File["${system_user_home_dir}/.ssh"]
   }
 
   file{$mirrored_repo_dir:
@@ -64,7 +90,6 @@ class gitlab_mirrors::config(
     content => $gitlab_mirror_user_token,
     require => File[$system_user_home_dir],
     mode => 640
-
   }
 
   file{"${repo_dir}/config.sh":

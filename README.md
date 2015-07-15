@@ -201,6 +201,8 @@ baked into the mirror_list class so you don't need to configure anything but the
 - ensure_mirror_list_repo_cron_job
 - configure_mirror_list_feature     # if true, sets ups the mirror list functionality
 - install_dependencies   # install git and pip
+- ssh_rsa_public_key     # set your public ssh key that will be used in the gitlab account for cloning ,
+- ssh_rsa_private_key    # set your private ssh key that will be used in the gitlab account for cloning 
 
 ## Requirements
 The following command line tools must be present on the system

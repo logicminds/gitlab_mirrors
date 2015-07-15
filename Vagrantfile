@@ -90,4 +90,4 @@ def vm(opt)
   end
 end
 module_name = File.basename(File.expand_path(File.join(File.dirname(__FILE__))))
-vm :hostname => 'centos6', :module => module_name, :box => 'puppetlabs/centos-6.6-64-puppet', :url => 'puppetlabs/centos-6.6-64-puppet', :cpu => 1, :memory => 2048, :gui => false
+vm :hostname => 'centos6', :module => module_name, :box => 'puppetlabs/centos-6.6-64-puppet', :url => 'puppetlabs/centos-6.6-64-puppet', :cpu => 1, :memory => 2048, :gui => false, :port => ['443', '80']

@@ -59,6 +59,8 @@ class gitlab_mirrors(
   $install_dependencies      = 'false',
   $ssh_rsa_public_key        = undef ,
   $ssh_rsa_private_key       = undef,
+  $mirror_list_branch        = 'master',
+  $gitlab_mirrors_branch     = 'master',
 ) {
   class{'gitlab_mirrors::install_dependencies':
     install_dependencies => $install_dependencies
@@ -83,12 +85,14 @@ class gitlab_mirrors(
     force_update              => $force_update,
     ssh_rsa_public_key        => $ssh_rsa_public_key,
     ssh_rsa_private_key       => $ssh_rsa_private_key,
+    gitlab_mirrors_branch     => $gitlab_mirrors_branch,
     require                   => Class['gitlab_mirrors::install_dependencies','gitlab_mirrors::install']
   }
   if $configure_mirror_list_feature == true {
     class{'gitlab_mirrors::mirror_list':
       mirror_list_repo          => $mirror_list_repo,
-      mirror_list_repo_path     =>$mirror_list_repo_path,
+      mirror_list_repo_path     => $mirror_list_repo_path,
+      mirror_list_branch        => $mirror_list_branch,
       ensure_mirror_sync_job    => $ensure_mirror_sync_job,
       system_mirror_user        => $system_mirror_user,
       system_mirror_group       => $system_mirror_group,

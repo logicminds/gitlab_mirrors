@@ -37,9 +37,9 @@
 #
 class gitlab_mirrors(
   $gitlab_mirror_user_token,
-  $gitlab_url,
-  $mirror_list_repo,
-  $mirror_list_repo_path,
+  $gitlab_url                = 'https://gitlab.com',
+  $mirror_list_repo          = 'https://github.com/logicminds/mirror_list',
+  $mirror_list_repo_path     = '/home/gitmirror/mirror_list',
   $gitlab_mirror_user        = 'gitmirror',
   $system_mirror_user        = 'gitmirror',
   $system_mirror_group       = 'gitmirror',

@@ -47,7 +47,7 @@ class gitlab_mirrors::mirror_list(
     ensure => file,
     source => "puppet:///modules/gitlab_mirrors/sync_mirrors.rb",
     require => Exec['git_mirror_list'],
-    mode => 750
+    mode => '750'
   }
 
   cron{'gitlab mirrors sync job':

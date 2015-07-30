@@ -89,7 +89,7 @@ class gitlab_mirrors::config(
     ensure => file,
     content => $gitlab_mirror_user_token,
     require => File[$system_user_home_dir],
-    mode => 640
+    mode => '0640'
   }
 
   file{"${repo_dir}/config.sh":

@@ -3,7 +3,12 @@ class gitlab_mirrors::install{
     ensure => '0.5.4',
     provider => 'pip',
   }
-
-  #echo -n | openssl s_client -connect HOST:PORTNUMBER | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/$SERVERNAME.cert
-
+  if $::osfamily == 'RedHat' {
+    # https://tickets.puppetlabs.com/browse/PUP-3829
+    file { '/usr/bin/pip-python':
+      ensure => 'link',
+      target => '/usr/bin/pip',
+      before => Package["gitlab3"]
+    }
+  }
 }

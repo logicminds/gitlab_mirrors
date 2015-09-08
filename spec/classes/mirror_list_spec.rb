@@ -49,7 +49,7 @@ describe 'gitlab_mirrors::mirror_list' do
     it do
       is_expected.to contain_cron('sync mirror list repo').
                          with({"ensure"=>"present",
-                               "command"=>"cd /home/gitmirror/mirror_list && git pull 2>&1 > /dev/null",
+                               "command"=>"source /etc/profile ; cd /home/gitmirror/mirror_list ; git pull 2>&1 > /dev/null",
                                "minute"=>"05"})
     end
     it do
@@ -61,7 +61,7 @@ describe 'gitlab_mirrors::mirror_list' do
     end
     it do
       is_expected.to contain_cron('gitlab mirrors sync job').
-                         with({"command"=>"/home/gitmirror/sync_mirrors.rb /home/gitmirror/gitlab-mirrors /home/gitmirror/mirror_list/mirror_list.yaml 2>&1 > /dev/null",
+                         with({"command"=>"source /etc/profile ; /home/gitmirror/sync_mirrors.rb /home/gitmirror/gitlab-mirrors /home/gitmirror/mirror_list/mirror_list.yaml 2>&1 > /dev/null",
                                "ensure"=>"present",
                                "hour"=>"*",
                                "minute"=>"10",

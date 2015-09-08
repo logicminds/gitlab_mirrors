@@ -116,7 +116,8 @@ class gitlab_mirrors::config(
   }
 
   cron{'gitlab mirrors update job':
-    command => "${repo_dir}/git-mirrors.sh 2>&1 > /dev/null",
+    environment => 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin',
+    command => "source /etc/profile ; ${repo_dir}/git-mirrors.sh 2>&1 > /dev/null",
     ensure => $ensure_mirror_update_job,
     hour => '*',
     minute => '0',

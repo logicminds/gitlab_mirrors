@@ -68,7 +68,7 @@ describe 'gitlab_mirrors::config' do
       }
     end
     it { is_expected.to contain_cron('gitlab mirrors update job').
-                  with_command('/home/gitmirror/gitlab-mirrors/git-mirrors.sh 2>&1 > /dev/null').
+                  with_command('source /etc/profile ; /home/gitmirror/gitlab-mirrors/git-mirrors.sh 2>&1 > /dev/null').
                   with_ensure('present').with_user('gitmirror')
     }
   end

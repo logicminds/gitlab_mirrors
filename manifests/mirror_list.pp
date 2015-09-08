@@ -37,8 +37,9 @@ class gitlab_mirrors::mirror_list(
     refreshonly => true,
   }
   cron{'sync mirror list repo':
+    environment => 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin',
     ensure => $ensure_mirror_list_repo_cron_job,
-    command => "cd ${mirror_list_repo_path} && git pull 2>&1 > /dev/null",
+    command => "source /etc/profile ; cd ${mirror_list_repo_path} ; git pull 2>&1 > /dev/null",
     minute => '05',
     user => $system_mirror_user,
   }
@@ -51,7 +52,7 @@ class gitlab_mirrors::mirror_list(
   }
 
   cron{'gitlab mirrors sync job':
-    command => "${system_user_home_dir}/sync_mirrors.rb $gitlab_mirrors_repo_dir_path $mirror_list 2>&1 > /dev/null",
+    command => "source /etc/profile ; ${system_user_home_dir}/sync_mirrors.rb $gitlab_mirrors_repo_dir_path $mirror_list 2>&1 > /dev/null",
     ensure => $ensure_mirror_sync_job,
     hour => '*',
     minute => '10',

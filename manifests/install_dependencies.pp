@@ -2,7 +2,7 @@ class gitlab_mirrors::install_dependencies(
   $install_dependencies = 'false'
 ){
 # this class requires pip and python to be installed
-  if $::id == 'root' and  $install_dependencies == 'true' {
+  if $::id == 'root' and $install_dependencies {
     if $::osfamily == 'RedHat' {
       # install epel so we can install python-pip
       # if using docker, you will need to have the lsb package installed

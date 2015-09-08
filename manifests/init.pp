@@ -56,7 +56,7 @@ class gitlab_mirrors(
   $mirrors_list_yaml_file    = 'mirror_list.yaml',
   $ensure_mirror_list_repo_cron_job = present,
   $configure_mirror_list_feature = true,
-  $install_dependencies      = 'false',
+  $install_dependencies      = false,
   $ssh_rsa_public_key        = undef ,
   $ssh_rsa_private_key       = undef,
   $mirror_list_branch        = 'master',
@@ -66,6 +66,7 @@ class gitlab_mirrors(
     install_dependencies => $install_dependencies
   }
   class{'gitlab_mirrors::install':
+    install_dependencies => $install_dependencies,
     require => Class['gitlab_mirrors::install_dependencies']
   }
   class{'gitlab_mirrors::config':

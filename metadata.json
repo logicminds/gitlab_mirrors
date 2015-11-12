@@ -1,6 +1,6 @@
 {
   "name": "logicminds-gitlab_mirrors",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "author": "Corey Osman",
   "summary": "Installs and Configures the gitlab-mirrors project",
   "license": "Apache 2.0",

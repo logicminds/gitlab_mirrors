@@ -32,7 +32,7 @@ class gitlab_mirrors::config(
       ensure => present,
     }
     file{$system_user_home_dir:
-      ensure => 'directory',
+      ensure  => 'directory',
       require => User[$system_mirror_user]
     }
   } else {
@@ -40,7 +40,7 @@ class gitlab_mirrors::config(
     file{$system_user_home_dir: }
   }
   file{"${system_user_home_dir}/.ssh":
-    ensure => directory,
+    ensure  => directory,
     require => File[$system_user_home_dir]
   }
 
@@ -62,15 +62,15 @@ class gitlab_mirrors::config(
       ensure => directory,
     }
     file{"${system_user_home_dir}/.ssh/id_rsa":
-      ensure => file,
+      ensure  => file,
       content => $ssh_rsa_private_key,
-      mode => 600,
+      mode    => '0600',
       require => File["${system_user_home_dir}/.ssh"]
     }
     file{"${system_user_home_dir}/.ssh/id_rsa.pub":
-      ensure => file,
+      ensure  => file,
       content => $ssh_rsa_public_key,
-      mode => 644,
+      mode    => '0644',
       require => File["${system_user_home_dir}/.ssh"]
     }
   }
@@ -81,47 +81,47 @@ class gitlab_mirrors::config(
   }
 
   file{$mirrored_repo_dir:
-    ensure => 'directory',
+    ensure  => 'directory',
     require => File[$system_user_home_dir]
   }
 
   file{ "${system_user_home_dir}/private_token":
-    ensure => file,
+    ensure  => file,
     content => $gitlab_mirror_user_token,
     require => File[$system_user_home_dir],
-    mode => '0640'
+    mode    => '0640'
   }
 
   file{"${repo_dir}/config.sh":
-    ensure => file,
+    ensure  => file,
     content => template('gitlab_mirrors/config.sh.erb'),
     require => Exec['git_mirrors']
   }
   exec{'git_mirrors':
-    path => ['/bin', '/usr/bin'],
-    cwd => $system_user_home_dir,
-    command => "git clone -b $gitlab_mirrors_branch $mirror_repo $repo_dir",
-    require => File[$system_user_home_dir],
-    notify => Exec["chown ${repo_dir}"],
-    user   => $system_mirror_user,
+    path      => ['/bin', '/usr/bin'],
+    cwd       => $system_user_home_dir,
+    command   => "git clone -b ${gitlab_mirrors_branch} ${mirror_repo} ${repo_dir}",
+    require   => File[$system_user_home_dir],
+    notify    => Exec["chown ${repo_dir}"],
+    user      => $system_mirror_user,
     logoutput => true,
-    creates => "${repo_dir}/.git"
+    creates   => "${repo_dir}/.git"
 
   }
 
   exec{"chown ${repo_dir}":
-    command => "chown -R ${system_mirror_user}:${system_mirror_group} ${repo_dir}",
-    path => ['/bin', '/usr/bin'],
+    command     => "chown -R ${system_mirror_user}:${system_mirror_group} ${repo_dir}",
+    path        => ['/bin', '/usr/bin'],
     refreshonly => true,
   }
 
   cron{'gitlab mirrors update job':
+    ensure      => $ensure_mirror_update_job,
     environment => 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin',
-    command => "source /etc/profile ; ${repo_dir}/git-mirrors.sh 2>&1 > /dev/null",
-    ensure => $ensure_mirror_update_job,
-    hour => '*',
-    minute => '0',
-    user => $system_mirror_user,
-    require => Exec['git_mirrors']
+    command     => "source /etc/profile ; ${repo_dir}/git-mirrors.sh 2>&1 > /dev/null",
+    hour        => '*',
+    minute      => '0',
+    user        => $system_mirror_user,
+    require     => Exec['git_mirrors']
   }
 }

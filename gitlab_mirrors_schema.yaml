@@ -1,0 +1,182 @@
+# Created using puppet-retrospec - https://github.com/nwops/puppet-retrospec
+# This schema file can be used to validate hiera data
+# http://www.kuwata-lab.com/kwalify/ruby/users-guide.01.html#schema
+# To validate your hiera data against this schema install the kwalify gem
+# 1. gem install kwalify
+# 2. kwalify -lf /Users/cosman/github/gitlab_mirrors/gitlab_mirrors_schema.yaml hiera_data_file.yaml
+# By default this schema is generic and only covers basic parameter types.
+# You should update the schema to match your expected data types in your puppet classes
+# or anywhere else you call hiera using the hiera() function.
+# This schema contains 54 entries.
+---
+type: map
+mapping:
+  hostclass:
+    type: map
+    mapping:
+      gitlab_mirrors::config::gitlab_mirror_user_token:
+        type: any
+        required: true
+      gitlab_mirrors::config::gitlab_url:
+        type: any
+        required: true
+      gitlab_mirrors::config::gitlab_mirror_user:
+        type: any
+        required: false
+      gitlab_mirrors::config::system_mirror_user:
+        type: any
+        required: false
+      gitlab_mirrors::config::system_mirror_group:
+        type: any
+        required: false
+      gitlab_mirrors::config::system_user_home_dir:
+        type: any
+        required: false
+      gitlab_mirrors::config::mirror_repo:
+        type: any
+        required: false
+      gitlab_mirrors::config::mirror_repo_dir_name:
+        type: any
+        required: false
+      gitlab_mirrors::config::repositories_dir_name:
+        type: any
+        required: false
+      gitlab_mirrors::config::gitlab_namespace:
+        type: any
+        required: false
+      gitlab_mirrors::config::generate_public_mirrors:
+        type: any
+        required: false
+      gitlab_mirrors::config::ensure_mirror_update_job:
+        type: any
+        required: false
+      gitlab_mirrors::config::prune_mirrors:
+        type: any
+        required: false
+      gitlab_mirrors::config::force_update:
+        type: any
+        required: false
+      gitlab_mirrors::config::gitlab_mirrors_branch:
+        type: any
+        required: false
+      gitlab_mirrors::config::ssh_rsa_public_key:
+        type: any
+        required: false
+      gitlab_mirrors::config::ssh_rsa_private_key:
+        type: any
+        required: false
+      gitlab_mirrors::gitlab_mirror_user_token:
+        type: any
+        required: true
+      gitlab_mirrors::gitlab_url:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list_repo:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list_repo_path:
+        type: any
+        required: false
+      gitlab_mirrors::gitlab_mirror_user:
+        type: any
+        required: false
+      gitlab_mirrors::system_mirror_user:
+        type: any
+        required: false
+      gitlab_mirrors::system_mirror_group:
+        type: any
+        required: false
+      gitlab_mirrors::system_user_home_dir:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_repo:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_repo_dir_name:
+        type: any
+        required: false
+      gitlab_mirrors::repositories_dir_name:
+        type: any
+        required: false
+      gitlab_mirrors::gitlab_namespace:
+        type: any
+        required: false
+      gitlab_mirrors::generate_public_mirrors:
+        type: any
+        required: false
+      gitlab_mirrors::ensure_mirror_update_job:
+        type: any
+        required: false
+      gitlab_mirrors::prune_mirrors:
+        type: any
+        required: false
+      gitlab_mirrors::force_update:
+        type: any
+        required: false
+      gitlab_mirrors::ensure_mirror_sync_job:
+        type: any
+        required: false
+      gitlab_mirrors::mirrors_list_yaml_file:
+        type: any
+        required: false
+      gitlab_mirrors::ensure_mirror_list_repo_cron_job:
+        type: any
+        required: false
+      gitlab_mirrors::configure_mirror_list_feature:
+        type: any
+        required: false
+      gitlab_mirrors::install_dependencies:
+        type: any
+        required: false
+      gitlab_mirrors::ssh_rsa_public_key:
+        type: any
+        required: false
+      gitlab_mirrors::ssh_rsa_private_key:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list_branch:
+        type: any
+        required: false
+      gitlab_mirrors::gitlab_mirrors_branch:
+        type: any
+        required: false
+      gitlab_mirrors::install::install_dependencies:
+        type: any
+        required: false
+      gitlab_mirrors::install_dependencies::install_dependencies:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list::mirror_list_repo:
+        type: any
+        required: true
+      gitlab_mirrors::mirror_list::mirror_list_repo_path:
+        type: any
+        required: true
+      gitlab_mirrors::mirror_list::ensure_mirror_sync_job:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list::system_mirror_user:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list::system_mirror_group:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list::gitlab_mirrors_repo_dir_path:
+        type: any
+        required: true
+      gitlab_mirrors::mirror_list::mirrors_list_yaml_file:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list::ensure_mirror_list_repo_cron_job:
+        type: any
+        required: false
+      gitlab_mirrors::mirror_list::system_user_home_dir:
+        type: any
+        required: true
+      gitlab_mirrors::mirror_list::mirror_list_branch:
+        type: any
+        required: false
+  definition:
+    type: map
+    mapping: {}
+

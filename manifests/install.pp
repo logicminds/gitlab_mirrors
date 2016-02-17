@@ -1,5 +1,5 @@
 class gitlab_mirrors::install(
-  $install_dependencies = 'false'
+  $install_dependencies = false
 ){
   if $install_dependencies {
     package{ 'gitlab3':
@@ -11,7 +11,7 @@ class gitlab_mirrors::install(
       file { '/usr/bin/pip-python':
         ensure => 'link',
         target => '/usr/bin/pip',
-        before => Package["gitlab3"]
+        before => Package['gitlab3']
       }
     }
   }

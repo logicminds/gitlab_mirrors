@@ -57,7 +57,7 @@ describe 'gitlab_mirrors::mirror_list' do
                          with({"ensure"=>"file",
                                "source"=>"puppet:///modules/gitlab_mirrors/sync_mirrors.rb",
                                "require"=>"Exec[git_mirror_list]",
-                               "mode"=>"750"})
+                               "mode"=>"0750"})
     end
     it do
       is_expected.to contain_cron('gitlab mirrors sync job').

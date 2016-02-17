@@ -232,6 +232,12 @@ api then it should work.
 5. bundle exec rake spec
 6. Create Merge request
 
+1. Add ruby to path
+2. add PYTONPATH=/home/gitmirror/.python_pkgs/lib/python2.6/site-packages
+3. mkdir -p /home/gitmirror/.python_pkgs/lib/python2.6/site-packages
+4. git clone python-requests &&  ./easy_install build && easy_install --prefix=$HOME/.python_pkgs
+5. git clone gitlab3 &&  ./easy_install build && easy_install --prefix=$HOME/.python_pkgs
+
 ## Release Notes/Contributors/Etc
 This additional functionality of the sync_mirrors.rb script may later be contributed to the
 gitlab-mirrors project and removed from this module since it adds additional functionality outside of the puppet code.

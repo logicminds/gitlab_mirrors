@@ -57,14 +57,14 @@ to the gitmirror user profile in gitlab UI. (http://doc.gitlab.com/ce/ssh/ssh.ht
 The local system user account can be on any system within your network as long as it can ssh into the gitlab system.  So
 you are not required to run this puppet module on your gitlab system.
 
-Once the public ssh key is setup the local system account will be able to push projects to your gitlab server sucessfully.
+Once the public ssh key is set up, the local system account will be able to push projects to your gitlab server successfully.
 
-Additionally, since gitlab_mirrors use the gitlab API it also needs the private token from the newly created gitlab user.
+Additionally, since gitlab_mirrors use the gitlab API, it also needs the private token from the newly-created gitlab user.
 
-This project makes use of the following modules which is not on the forge.
+This project makes use of the following modules, which are not on the forge.
 - https://github.com/nanliu/puppet-git.git
 
-### Setup a mirror list functionality using a repo (Optionally, but highly recommended)
+### Set up a mirror list functionality using a repo (Optionally, but highly recommended)
 1. Create a repo on your gitlab server called mirror_list
 2. Add a yaml file called mirror_list.yaml to the repo
 3. Populate the list with the repos you want to mirror.
@@ -96,7 +96,7 @@ Install the python related requirements.  Must have python and pip installed
    include gitlab_mirrors::install
 ```
 
-To setup gitlab_mirrors alone without the mirror list functionality
+To set up gitlab_mirrors alone without the mirror list functionality
 ```puppet
   class{'gitlab_mirrors::config':
       gitlab_mirror_user_token  => '12345678abcdefg',
@@ -116,7 +116,7 @@ To setup gitlab_mirrors alone without the mirror list functionality
   }
 ```
 
-To setup the gitlab_mirrors automated sync_mirror tasks.
+To set up the gitlab_mirrors automated sync_mirror tasks.
 
 ```puppet
    class{'gitlab_mirrors::mirror_list':
@@ -175,7 +175,7 @@ puppet-staging: https://github.com/nanliu/puppet-staging.git
 
 The script loops around the mirror list and adds them via the add_mirrors.sh script which is part of the gitlab_mirrors project.
 Setting up a cron job allows us to automatically add new mirrors by just updating the mirror_list.yaml.
-Furthermore, if you keep the mirror list in a git repo and create a cron job to auto update the mirror_list repo you
+Furthermore, if you keep the mirror list in a git repo and create a cron job to auto update the mirror_list repo, you
 can basically control the whole mirroring via a new commit to the mirror list repo.  All of this functionality is
 baked into the mirror_list class so you don't need to configure anything but the creation of the repo.
 
